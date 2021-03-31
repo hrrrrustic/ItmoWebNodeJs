@@ -1,0 +1,29 @@
+header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+}
+
+body {
+    margin: 35px 25px 35px 25px;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+h1 {
+    font-size: 250%;
+}
+
+h2 {
+    font-size: 150%;
+}
+
+button:hover {
+    cursor: pointer;
+}
