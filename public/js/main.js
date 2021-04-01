@@ -51,7 +51,7 @@ async function AddToFavorites(cityName, duplicate, invalid){
         return false
     }
     
-    if(result.status === 400){
+    if(result.status === 404){
         invalid()
         return false
     }
@@ -85,18 +85,10 @@ async function FetchCityByName(cityName){
     loader.querySelector('h3').textContent = cityName
     cardContainer.appendChild(loader)
     let apiUrl = config.BaseApiUrl + "weather?city=" + cityName
-    let response = await fetch(apiUrl)
-    if(response.status === 404){
-        cardContainer.removeChild(loader)
-        throw new Error("Invalid city")
-    }
-    let card;
-    try{
-        card = GetCityCardFromJson(await response.json())
-    }
-    catch{
-        card = GetErrorCard(cityName)
-    }
+    let card = await fetch(apiUrl)
+        .then(x => x.json())
+        .then(x => GetCityCardFromJson(x))
+        .catch(x => GetErrorCard(cityName))
 
     card.querySelector(".remove-button").addEventListener("click", RemoveCard)
     loader.replaceWith(card)
@@ -105,7 +97,7 @@ async function FetchCityByName(cityName){
 function GetCityCardFromJson(jsonValue){
     let newCard = cardTemplate.content.cloneNode(true).querySelector(".city-card")
     newCard.querySelector("h3").textContent = jsonValue.name
-    newCard.querySelector(".tempareture-font-color").textContent = jsonValue.temp
+    newCard.querySelector(".tempareture-font-color").textContent = jsonValue.temp + "°C"
     let properties = newCard.querySelectorAll(".weather-property li");
     SetValues(properties, newCard.querySelector(".city-card-header img"), jsonValue)
     return newCard
@@ -121,7 +113,7 @@ function RefreshGeo(){
             RefreshMainCity(url)
         },
         function(geolocation){
-            let url = config.BaseApiUrl + "?city=Moscow"
+            let url = config.BaseApiUrl + "weather?city=Moscow"
             RefreshMainCity(url)
         }
     )
@@ -188,7 +180,7 @@ function GetMainCardError(){
 function GetMainCity(jsonValue){
     let mainInfo = mainCityTemplate.content.cloneNode(true).querySelector(".current-city-card")
     mainInfo.querySelector("h2").textContent = jsonValue.name
-    mainInfo.querySelector(".tempareture-font-color").textContent = jsonValue.temp
+    mainInfo.querySelector(".tempareture-font-color").textContent = jsonValue.temp + "°C"
     SetValues(mainInfo.querySelectorAll(".current-weather-property li"), mainInfo.querySelector(".current-city-weather img"), jsonValue)
     return mainInfo
 }

@@ -72,7 +72,7 @@ app.post('/favorites', async function(req, res){
     let cityName = req.body.city.toLowerCase()
     let notExist = (await GetData(GetUrlWithCityName(cityName))).status === 404
     if(notExist === true){
-        res.status(400).send("Invalid city")
+        res.status(404).send("Invalid city")
         return
     }
 
